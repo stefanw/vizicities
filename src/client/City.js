@@ -1,4 +1,4 @@
-/* globals window, _, VIZI, Q */
+/* globals window, _, VIZI, Q, THREE */
 (function() {
 	"use strict";
 
@@ -276,12 +276,45 @@
 
 		var deferred = Q.defer();
 
-		this.controls = VIZI.Controls.getInstance();
+		// this.controls = VIZI.Controls.getInstance();
 
-		this.controls.init(this.domElement, this.webgl.camera, this.options.controls).then(function(result) {
-			VIZI.Log("Finished intialising controls in " + (Date.now() - startTime) + "ms");
+		// this.controls.init(this.domElement, this.webgl.camera, this.options.controls).then(function(result) {
+		// 	VIZI.Log("Finished intialising controls in " + (Date.now() - startTime) + "ms");
 
-			deferred.resolve();
+		// 	deferred.resolve();
+		// });
+
+		var element = this.domElement;
+		var camera = this.webgl.camera.camera;
+		// camera.position.set(0, 10, 0);
+
+		this.controls = new THREE.OrbitControls(camera, element);
+		var controls = this.controls;
+		controls.rotateUp(Math.PI / 4);
+		controls.target.set(
+			camera.position.x + 0.1,
+			camera.position.y,
+			camera.position.z
+		);
+		controls.noZoom = true;
+		controls.noPan = true;
+
+		function setOrientationControls(e) {
+			if (!e.alpha) {
+			  return;
+			}
+
+			controls = new THREE.DeviceOrientationControls(camera, true);
+			controls.connect();
+			controls.update();
+
+			window.removeEventListener('deviceorientation', setOrientationControls, true);
+		}
+		window.addEventListener('deviceorientation', setOrientationControls, true);
+		deferred.resolve();
+
+		this.subscribe("update", function(d){
+			controls.update(d);
 		});
 
 		return deferred.promise;

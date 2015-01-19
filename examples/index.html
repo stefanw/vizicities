@@ -3,6 +3,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>ViziCities Demo</title>
 
   <link href="reset.css" rel="stylesheet" type="text/css">
@@ -33,12 +34,32 @@
     VIZI.ENABLE_OUTLINES = false;
     VIZI.ENABLE_ROADS = true;
 
+    var container = document.getElementById("vizicities-container");
+
     var city = new VIZI.City();
-    city.init({
+    var deferred = city.init({
       coords: [-0.01924, 51.50358], // Canary Wharf
-      domElement: document.getElementById("vizicities-container"),
+      // coords: [52.521174381158666, 13.410350382328032], // Berlin
+      domElement: container,
       overpassGridUpdate: true
     });
+
+    document.body.onclick = function() {
+      fullscreen();
+    };
+
+    function fullscreen() {
+      console.log('FULLSCREEN');
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.msRequestFullscreen) {
+        container.msRequestFullscreen();
+      } else if (container.mozRequestFullScreen) {
+        container.mozRequestFullScreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
+    }
   </script>
 
 </body>
